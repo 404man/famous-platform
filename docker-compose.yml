@@ -1,0 +1,45 @@
+version:  '3'
+
+services:
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    networks: 
+      - web-backend-tier
+    volumes:
+      - django-db
+  web: 
+    build: 
+      context: ./famous
+      dockerfile: Dockerfile
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    networks:
+      - web-backend-tier 
+  redis:
+    image: library/redis:5.0-alpine
+    ports:
+      - 6379:6379
+    restart: unless-stopped
+    networks:
+      - web-backend-tier
+    volumes:
+      - django-redis:/data
+volumes:
+  django-redis:
+    driver: local
+  django-db:
+    driver: local
+networks:
+  web-backend-tier:
+    driver: bridge
+    
