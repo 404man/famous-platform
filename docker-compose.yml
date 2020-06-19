@@ -17,9 +17,10 @@ services:
     build: 
       context: ./famous
       dockerfile: ./Dockerfile
-    command: python ./famous/manage.py runserver 0.0.0.0:8000
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - .:/app
+      - ./famous:/app
+      - ./famous/famous/:/app/famous:Z
     ports:
       - "8000:8000"
     depends_on:
